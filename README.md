@@ -1,6 +1,6 @@
 # crackmyd
 
-[![release](https://img.shields.io/github/v/release/ciphersaw/crackmyd)](https://github.com/ciphersaw/crackmyd) [![go](https://img.shields.io/badge/go-1.15.8-blue)](https://golang.org/) 
+[![release](https://img.shields.io/github/v/release/ciphersaw/crackmyd)](https://github.com/ciphersaw/crackmyd) [![go](https://img.shields.io/badge/go-1.16-blue)](https://golang.org/)
 
 The crackmyd is a lightweight tool to analyse the user.MYD file in MySQL and its congeneric RDBMS like MariaDB.
 
