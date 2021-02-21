@@ -10,10 +10,11 @@ import (
 // IsPathExist checks the path of file if is existed.
 func IsPathExist(path string) bool {
 	if _, err := os.Stat(path); err != nil {
-		if os.IsExist(err) {
-			return true
-		} else {
+		if os.IsNotExist(err) {
 			fmt.Printf("%s is not existed: %s", path, err.Error())
+			return false
+		} else {
+			fmt.Printf("os.Stat(%s) error: %s", path, err.Error())
 			return false
 		}
 	} else {
