@@ -1,7 +1,10 @@
 package action
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -9,6 +12,12 @@ import (
 	"crackmyd/common"
 	"github.com/olekukonko/tablewriter"
 )
+
+// PwdMode indicates the mode of method 2 in crack function.
+var PwdMode = "default"
+
+// PwdFile records the path of dictionary of passwords in crack function.
+var PwdFile = ""
 
 // weakPasswordMap stores the hash of plaintext in weakPasswordList.
 var weakPasswordMap = map[string]string{}
@@ -36,21 +45,29 @@ type userMYD struct {
 func (u *userMYD) crack() {
 	password := strings.ToLower(u.password)
 
-	// Check if the password is equal to the hash of user.
+	// Method 1: Check if the password is equal to the hash of user.
 	if password == common.MysqlPassword(u.user) {
 		u.plaintext = u.user
 		return
 	}
 
-	// Check if the password is equal to the hash of weakPasswordList.
-	for plaintext, hash := range weakPasswordMap {
-		if password == hash {
+	// Method 2: Check if the password is equal to the hash of weakPasswordList, or the user-defined dictionary of passwords.
+	if PwdMode == "default" {
+		for plaintext, hash := range weakPasswordMap {
+			if password == hash {
+				u.plaintext = plaintext
+				return
+			}
+		}
+	} else if PwdMode == "assign" {
+		hit, plaintext := assignPasswordDict(PwdFile, password)
+		if hit {
 			u.plaintext = plaintext
 			return
 		}
 	}
 
-	// Check if the password is equal to the hash of combination of user and suffix.
+	// Method 3: Check if the password is equal to the hash of combination of user and suffix.
 	for _, suffix := range userSuffixList {
 		combo := u.user + suffix
 		if password == common.MysqlPassword(combo) {
@@ -60,10 +77,40 @@ func (u *userMYD) crack() {
 	}
 }
 
+// assignPasswordDict enumerates the plaintext by a user-defined dictionary of passwords.
+func assignPasswordDict(obj, password string) (hit bool, plaintext string) {
+	file, err := os.Open(obj)
+	if err != nil {
+		fmt.Printf("assignPasswordDict os.Open(%s) error: %s\n", obj, err.Error())
+		os.Exit(2)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		plaintext = scanner.Text()
+		if password == common.MysqlPassword(plaintext) {
+			return true, plaintext
+		}
+	}
+	if err = scanner.Err(); err != nil {
+		fmt.Printf("assignPasswordDict scanner.Scan(%s) error: %s\n", obj, err.Error())
+		os.Exit(2)
+	}
+
+	return false, ""
+}
+
 // analyseFile analyses the user.MYD file input, where in order to extract the host, user and password,
 // and find out the plaintext of password finally.
-func analyseFile(file []byte) {
+func analyseFile(obj string) {
 	var result []userMYD
+
+	file, err := ioutil.ReadFile(obj)
+	if err != nil {
+		fmt.Printf("analyseFile ioutil.ReadFile(%s) error: %s", obj, err.Error())
+		os.Exit(2)
+	}
 
 	records := mysqlPwdReg.FindAllSubmatch(file, -1)
 	for _, r := range records {
