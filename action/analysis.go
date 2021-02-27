@@ -19,6 +19,12 @@ var PwdMode = "default"
 // PwdFile records the path of dictionary of passwords in crack function.
 var PwdFile = ""
 
+// SufMode indicates the mode of method 3 in crack function.
+var SufMode = "default"
+
+// SufFile records the path of dictionary of suffixes in crack function.
+var SufFile = ""
+
 // weakPasswordMap stores the hash of plaintext in weakPasswordList.
 var weakPasswordMap = map[string]string{}
 
@@ -51,7 +57,7 @@ func (u *userMYD) crack() {
 		return
 	}
 
-	// Method 2: Check if the password is equal to the hash of weakPasswordList, or the user-defined dictionary of passwords.
+	// Method 2: Check if the password is equal to the hash of weakPasswordList, or passwords in dictionary.
 	if PwdMode == "default" {
 		for plaintext, hash := range weakPasswordMap {
 			if password == hash {
@@ -67,14 +73,23 @@ func (u *userMYD) crack() {
 		}
 	}
 
-	// Method 3: Check if the password is equal to the hash of combination of user and suffix.
-	for _, suffix := range userSuffixList {
-		combo := u.user + suffix
-		if password == common.MysqlPassword(combo) {
-			u.plaintext = combo
+	// Method 3: Check if the password is equal to the hash of combination of user and suffix, or suffixes in dictionary.
+	if SufMode == "default" {
+		for _, suffix := range userSuffixList {
+			combo := u.user + suffix
+			if password == common.MysqlPassword(combo) {
+				u.plaintext = combo
+				return
+			}
+		}
+	} else if SufMode == "assign" {
+		hit, plaintext := assignSuffixDict(SufFile, password, u.user)
+		if hit {
+			u.plaintext = plaintext
 			return
 		}
 	}
+
 }
 
 // assignPasswordDict enumerates the plaintext by a user-defined dictionary of passwords.
@@ -95,6 +110,30 @@ func assignPasswordDict(obj, password string) (hit bool, plaintext string) {
 	}
 	if err = scanner.Err(); err != nil {
 		fmt.Printf("assignPasswordDict scanner.Scan(%s) error: %s\n", obj, err.Error())
+		os.Exit(2)
+	}
+
+	return false, ""
+}
+
+// assignSuffixDict enumerates the plaintext by a user-defined dictionary of suffixes that will be combined with user.
+func assignSuffixDict(obj, password, user string) (hit bool, combo string) {
+	file, err := os.Open(obj)
+	if err != nil {
+		fmt.Printf("assignSuffixDict os.Open(%s) error: %s\n", obj, err.Error())
+		os.Exit(2)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		combo = user + scanner.Text()
+		if password == common.MysqlPassword(combo) {
+			return true, combo
+		}
+	}
+	if err = scanner.Err(); err != nil {
+		fmt.Printf("assignSuffixDict scanner.Scan(%s) error: %s\n", obj, err.Error())
 		os.Exit(2)
 	}
 

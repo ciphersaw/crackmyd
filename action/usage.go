@@ -10,6 +10,7 @@ import (
 var usageMap = map[string]string{
 	"version":  "Print the version of crackmyd.",
 	"password": "Load the user-defined dictionary of passwords for cracking.",
+	"suffix":   "Load the user-defined dictionary of suffixes for cracking.",
 }
 
 // usage customizes the usage information for crackmyd.

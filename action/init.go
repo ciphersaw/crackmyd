@@ -14,6 +14,7 @@ var ver = "v0.0.1"
 func InitArgs() {
 	verPtr := flag.Bool("version", false, usageMap["version"])
 	pwdPtr := flag.String("password", "", usageMap["password"])
+	sufPtr := flag.String("suffix", "", usageMap["suffix"])
 	flag.Usage = usage
 	flag.Parse()
 
@@ -28,6 +29,14 @@ func InitArgs() {
 		}
 		PwdMode = "assign"
 		PwdFile = *pwdPtr
+	}
+
+	if *sufPtr != "" {
+		if !common.IsPathExist(*sufPtr) {
+			os.Exit(1)
+		}
+		SufMode = "assign"
+		SufFile = *sufPtr
 	}
 
 	obj := flag.Arg(0)
