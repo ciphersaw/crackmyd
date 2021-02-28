@@ -51,13 +51,15 @@ type userMYD struct {
 func (u *userMYD) crack() {
 	password := strings.ToLower(u.password)
 
-	// Method 1: Check if the password is equal to the hash of user.
+	// Strategy 1: Same As User Name
+	// Check if the password is equal to the hash of user.
 	if password == common.MysqlPassword(u.user) {
 		u.plaintext = u.user
 		return
 	}
 
-	// Method 2: Check if the password is equal to the hash of weakPasswordList, or passwords in dictionary.
+	// Strategy 2: Simple Guess
+	// Check if the password is equal to the hash of the default weakPasswordList, or the user-defined passwords in dictionary.
 	if PwdMode == "default" {
 		for plaintext, hash := range weakPasswordMap {
 			if password == hash {
@@ -73,7 +75,8 @@ func (u *userMYD) crack() {
 		}
 	}
 
-	// Method 3: Check if the password is equal to the hash of combination of user and suffix, or suffixes in dictionary.
+	// Strategy 3: Suffix Combo
+	// Check if the password is equal to the hash of combination of user with the default suffixes, or the user-defined suffixes in dictionary.
 	if SufMode == "default" {
 		for _, suffix := range userSuffixList {
 			combo := u.user + suffix

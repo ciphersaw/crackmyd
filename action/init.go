@@ -8,7 +8,7 @@ import (
 	"crackmyd/common"
 )
 
-var ver = "v0.0.1"
+var ver = "v0.0.2"
 
 // InitArgs initializes and resolves the input arguments.
 func InitArgs() {
