@@ -46,10 +46,10 @@ v0.0.2
 
 ### Crack
 
-Input `./crackmyd <file>` to crack user.MYD, and take `./example/user.MYD` as example:
+Input `./crackmyd <file>` to crack user.MYD, and take `./example/user-mariadb-10.3.MYD` as example:
 
 ```bash
-[root@kali ~]# ./crackmyd ./example/user.MYD
+[root@kali ~]# ./crackmyd ./example/user-mariadb-10.3.MYD
 +---------------+----------+------------------------------------------+-----------+
 |     HOST      |   USER   |                 PASSWORD                 | PLAINTEXT |
 +---------------+----------+------------------------------------------+-----------+
@@ -67,7 +67,7 @@ According to the result, it cracks the password `crackmyd` of user `crackmyd` by
 Based on the default configs all above, now assign the dictionary of passwords or suffixes for cracking:
 
 ```bash
-[root@kali ~]# ./crackmyd --password ./example/password.txt --suffix ./example/suffix.txt ./example/user.MYD
+[root@kali ~]# ./crackmyd --password ./example/password.txt --suffix ./example/suffix.txt ./example/user-mariadb-10.3.MYD
 +---------------+----------+------------------------------------------+------------------+
 |     HOST      |   USER   |                 PASSWORD                 |    PLAINTEXT     |
 +---------------+----------+------------------------------------------+------------------+

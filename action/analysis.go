@@ -4,12 +4,12 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
 
 	"crackmyd/common"
+
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -28,8 +28,11 @@ var SufFile = ""
 // weakPasswordMap stores the hash of plaintext in weakPasswordList.
 var weakPasswordMap = map[string]string{}
 
-// mysqlPwdReg matches the information block containing host, user and password.
-var mysqlPwdReg = regexp.MustCompile(`(.{3})[^\x20-\x7e]{1}([%\w\.\\]+)[^\x20-\x7e]{1}(\w+)\*(\w{40})`)
+// mysqlPwdReg1 matches the information block containing host, user and password, used for MySQL v4.1~v5.6.
+var mysqlPwdReg1 = regexp.MustCompile(`(.{3})[^\x20-\x7e]{1}([%\w\.\\]+)[^\x20-\x7e]{1}(\w+)\*(\w{40})`)
+
+// mysqlPwdReg2 matches the information block containing host, user and password, used for MySQL v5.7+.
+var mysqlPwdReg2 = regexp.MustCompile(`(.{3})[^\x20-\x7e]{1}([%\w\.\\]+)[^\x20-\x7e]{1}(\w+)[\x01]{30}[^\x20-\x7e]{1}mysql_native_password\)[\x00]{1}\*(\w{40})`)
 
 func init() {
 	// Calculate and store the hash of plaintext in weakPasswordList.
@@ -148,29 +151,52 @@ func assignSuffixDict(obj, password, user string) (hit bool, combo string) {
 func analyseFile(obj string) {
 	var result []userMYD
 
-	file, err := ioutil.ReadFile(obj)
+	content, err := os.ReadFile(obj)
 	if err != nil {
-		fmt.Printf("analyseFile ioutil.ReadFile(%s) error: %s", obj, err.Error())
+		fmt.Printf("analyseFile os.ReadFile(%s) error: %s", obj, err.Error())
 		os.Exit(2)
 	}
 
-	records := mysqlPwdReg.FindAllSubmatch(file, -1)
+	records := extractRecords(content)
 	for _, r := range records {
-		// If the 3 bytes before the control character of host do not contain /xFB, regard the record as invalid.
-		if !bytes.Contains(r[1], []byte{251}) {
-			continue
-		}
-
-		u := userMYD{
-			host:     string(r[2]),
-			user:     string(r[3]),
-			password: string(r[4]),
-		}
-		u.crack()
-		result = append(result, u)
+		r.crack()
+		result = append(result, r)
 	}
 
 	printUserMYD(result)
+}
+
+// extractRecords extracts records from the content of user.MYD, including host, user and password.
+func extractRecords(content []byte) (records []userMYD) {
+	matches := mysqlPwdReg1.FindAllSubmatch(content, -1)
+	for _, m := range matches {
+		// If the 3 bytes before the control character of host do not contain [0xFB], regard the record as invalid.
+		if !bytes.Contains(m[1], []byte{0xFB}) {
+			continue
+		}
+		u := userMYD{
+			host:     string(m[2]),
+			user:     string(m[3]),
+			password: string(m[4]),
+		}
+		records = append(records, u)
+	}
+
+	matches = mysqlPwdReg2.FindAllSubmatch(content, -1)
+	for _, m := range matches {
+		// If the 3 bytes before the control character of host are not equal to [0xFF 0x13 0xFC], regard the record as invalid.
+		if !bytes.Equal(m[1], []byte{0xFF, 0x13, 0xFC}) {
+			continue
+		}
+		u := userMYD{
+			host:     string(m[2]),
+			user:     string(m[3]),
+			password: string(m[4]),
+		}
+		records = append(records, u)
+	}
+
+	return
 }
 
 // printUserMYD outputs the result of analyseFile in table format.
