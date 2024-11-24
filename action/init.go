@@ -1,20 +1,21 @@
 package action
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
 	"crackmyd/common"
+
+	flag "github.com/spf13/pflag"
 )
 
 var ver = "v0.0.2"
 
 // InitArgs initializes and resolves the input arguments.
 func InitArgs() {
-	verPtr := flag.Bool("version", false, usageMap["version"])
-	pwdPtr := flag.String("password", "", usageMap["password"])
-	sufPtr := flag.String("suffix", "", usageMap["suffix"])
+	verPtr := flag.BoolP("version", "v", false, usageMap["version"])
+	pwdPtr := flag.StringP("password", "p", "", usageMap["password"])
+	sufPtr := flag.StringP("suffix", "s", "", usageMap["suffix"])
 	flag.Usage = usage
 	flag.Parse()
 
