@@ -45,7 +45,11 @@ func InitArgs() {
 		if !common.IsPathExist(obj) {
 			os.Exit(1)
 		}
-		analyseFile(obj)
+		result, err := analyseFile(obj)
+		if err != nil {
+			os.Exit(2)
+		}
+		printUserMYD(result)
 	} else {
 		flag.Usage()
 	}

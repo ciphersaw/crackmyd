@@ -148,13 +148,11 @@ func assignSuffixDict(obj, password, user string) (hit bool, combo string) {
 
 // analyseFile analyses the user.MYD file input, where in order to extract the host, user and password,
 // and find out the plaintext of password finally.
-func analyseFile(obj string) {
-	var result []userMYD
-
+func analyseFile(obj string) (result []userMYD, err error) {
 	content, err := os.ReadFile(obj)
 	if err != nil {
 		fmt.Printf("analyseFile os.ReadFile(%s) error: %s", obj, err.Error())
-		os.Exit(2)
+		return nil, err
 	}
 
 	records := extractRecords(content)
@@ -163,7 +161,7 @@ func analyseFile(obj string) {
 		result = append(result, r)
 	}
 
-	printUserMYD(result)
+	return result, nil
 }
 
 // extractRecords extracts records from the content of user.MYD, including host, user and password.
