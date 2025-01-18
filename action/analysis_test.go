@@ -10,10 +10,10 @@ func TestAnalyseMariadb_10_3(t *testing.T) {
 	SufMode = "assign"
 	SufFile = "../example/suffix.txt"
 
-	obj := "../example/user-mariadb-10.3.MYD"
+	obj := "../example/mariadb_10.3_user.MYD"
 	result, err := analyseFile(obj)
 	if err != nil {
-		t.Errorf("analyseFile test user-mariadb-10.3.MYD fails: %v", err)
+		t.Errorf("analyseFile test mariadb_10.3_user.MYD fails: %v", err)
 	}
 
 	for _, r := range result {
@@ -54,10 +54,10 @@ func TestAnalyseMysql_5_7(t *testing.T) {
 	SufMode = "assign"
 	SufFile = "../example/suffix.txt"
 
-	obj := "../example/user-mysql-5.7.MYD"
+	obj := "../example/mysql_5.7_user.MYD"
 	result, err := analyseFile(obj)
 	if err != nil {
-		t.Errorf("analyseFile test user-mysql-5.7.MYD fails: %v", err)
+		t.Errorf("analyseFile test mysql_5.7_user.MYD fails: %v", err)
 	}
 
 	for _, r := range result {
