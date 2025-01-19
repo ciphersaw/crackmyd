@@ -2,9 +2,11 @@
 
 [![release](https://img.shields.io/github/v/release/ciphersaw/crackmyd)](https://github.com/ciphersaw/crackmyd) [![go](https://img.shields.io/badge/go-1.16-blue)](https://golang.org/)
 
-The crackmyd is a lightweight tool to analyse the user.MYD file in MySQL and its congeneric RDBMS like MariaDB.
+English | [简体中文](README-zh_CN.md)
 
-Specifically, it can extract  the host, user, and password from user.MYD, and find out the plaintext of password by brute force attack.
+The **crackmyd** is a lightweight tool to analyse the user.MYD file in MySQL and its congeneric RDBMS like MariaDB.
+
+Specifically, it can extract the user, password and host from user.MYD file, and find out the plaintext of password by brute force attack.
 
 ## Strategy
 
@@ -64,7 +66,7 @@ Input `./crackmyd <file>` to crack user.MYD, and take `./example/mariadb_10.3_us
 
 According to the result, it cracks the password `crackmyd` of user `crackmyd` by *Strategy 1*, the password `qwerty` of user `kali` by *Strategy 2*, and the password `app123` of user `app` by *Strategy 3*.
 
-Based on the default configs all above, now assign the dictionary of passwords or suffixes for cracking:
+Besides the default dictionaries, the user-defined dictionaries of passwords and suffixes can be used for cracking:
 
 ```bash
 [root@kali ~]# ./crackmyd --password ./example/password.txt --suffix ./example/suffix.txt ./example/mariadb_10.3_user.MYD
@@ -80,11 +82,11 @@ Based on the default configs all above, now assign the dictionary of passwords o
 +---------------+----------+------------------------------------------+------------------+
 ```
 
-With the dictionaries, it eventually cracks the password `q1w2e3r4` of user `kalinew` by *Strategy 2*, and the password `appnew@gmail.com` of user `appnew` by *Strategy 3*.
+With the user-defined dictionaries, it eventually cracks the password `q1w2e3r4` of user `kalinew` by *Strategy 2*, and the password `appnew@gmail.com` of user `appnew` by *Strategy 3*.
 
 In addition, it never cracks the password of user `stronger`, who has the strong password `IamStronger@2021`.
 
 ## Notice
 
-- Please run crackmyd with a higher permission accessible to user.MYD.
+- Please make sure to run **crackmyd** with high enough permission to access the user.MYD file.
 - If it failed to crack the hash of password, the value of plaintext would be empty.
