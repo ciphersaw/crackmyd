@@ -9,6 +9,7 @@ import (
 
 // usageMap records the usage of each argument.
 var usageMap = map[string]string{
+	"help":     "Print the usage of crackmyd.",
 	"version":  "Print the version of crackmyd.",
 	"password": "Assign the user-defined dictionary of passwords for cracking.",
 	"suffix":   "Assign the user-defined dictionary of suffixes for cracking.",

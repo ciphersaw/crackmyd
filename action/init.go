@@ -9,15 +9,21 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-var ver = "v0.0.2"
+var ver = "v0.1.0"
 
 // InitArgs initializes and resolves the input arguments.
 func InitArgs() {
+	helpPtr := flag.BoolP("help", "h", false, usageMap["help"])
 	verPtr := flag.BoolP("version", "v", false, usageMap["version"])
 	pwdPtr := flag.StringP("password", "p", "", usageMap["password"])
 	sufPtr := flag.StringP("suffix", "s", "", usageMap["suffix"])
 	flag.Usage = usage
 	flag.Parse()
+
+	if *helpPtr {
+		flag.Usage()
+		os.Exit(0)
+	}
 
 	if *verPtr {
 		fmt.Printf("%s", ver)

@@ -29,12 +29,10 @@ Input `./crackmyd --help` to get usages:
 ```bash
 [root@kali ~]# ./crackmyd --help
 Usage: ./crackmyd [options] <file>
-  -password string
-        Assign the user-defined dictionary of passwords for cracking.
-  -suffix string
-        Assign the user-defined dictionary of suffixes for cracking.
-  -version
-        Print the version of crackmyd.
+  -h, --help              Print the usage of crackmyd.
+  -p, --password string   Assign the user-defined dictionary of passwords for cracking.
+  -s, --suffix string     Assign the user-defined dictionary of suffixes for cracking.
+  -v, --version           Print the version of crackmyd.
 ```
 
 ### Version
@@ -43,7 +41,7 @@ Input `./crackmyd --version` to get the current version:
 
 ```bash
 [root@kali ~]# ./crackmyd --version
-v0.0.2
+v0.1.0
 ```
 
 ### Crack
