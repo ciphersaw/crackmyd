@@ -1,6 +1,6 @@
 # crackmyd
 
-[![release](https://img.shields.io/github/v/release/ciphersaw/crackmyd)](https://github.com/ciphersaw/crackmyd) [![go](https://img.shields.io/badge/go-1.16-blue)](https://golang.org/)
+[![release](https://img.shields.io/github/v/release/ciphersaw/crackmyd)](https://github.com/ciphersaw/crackmyd) [![go](https://img.shields.io/badge/go-1.23-blue)](https://golang.org/)
 
 [English](README.md) | 简体中文
 
